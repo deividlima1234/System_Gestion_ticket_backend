@@ -30,7 +30,7 @@ Sigue estos pasos para desplegar el entorno de desarrollo local:
 
 1.  **Clonar el repositorio**
     ```bash
-    git clone <url-del-repositorio>
+    git clone https://github.com/deividlima1234/System_Gestion_ticket_backend
     cd System_Gestion_ticket_backend
     ```
 
