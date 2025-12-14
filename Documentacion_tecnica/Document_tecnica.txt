@@ -1,0 +1,294 @@
+# **Documentación Técnica del Proyecto**
+
+## **System Gestión de Tickets (Backend & Frontend)**
+
+---
+
+## **1. Visión General del Proyecto**
+
+El proyecto **System Gestión de Tickets** es un sistema web de mesa de ayuda TI desarrollado bajo una arquitectura **desacoplada**, compuesto por:
+
+* **Backend:** Laravel (API REST)
+* **Frontend:** React (SPA)
+* **Base de Datos:** PostgreSQL
+
+El desarrollo se realizará **por módulos**, aplicando pruebas funcionales al finalizar cada uno.
+
+---
+
+## **2. Arquitectura General**
+
+```
+[ React SPA ]  --->  [ API REST Laravel ]  --->  [ PostgreSQL ]
+```
+
+* Comunicación vía JSON (HTTP)
+* Autenticación basada en tokens
+* Separación total de responsabilidades
+
+---
+
+# **3. Documentación del Backend (Laravel)**
+
+## **3.1 Módulos del Backend**
+
+### **Módulo 1: Configuración Base y Conexión a Base de Datos**
+
+**Objetivo:** dejar operativa la API y conectada a PostgreSQL.
+
+#### Configuración `.env`
+
+```env
+APP_NAME="System Gestion Ticket API"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://127.0.0.1:8000
+
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=gestion_tickets
+DB_USERNAME=postgres
+DB_PASSWORD=tu_password
+```
+
+#### Prueba del módulo
+
+```bash
+php artisan migrate
+```
+
+✔ Migraciones ejecutadas sin errores.
+
+---
+
+### **Módulo 2: Autenticación y Usuarios**
+
+**Funcionalidad:**
+
+* Login
+* Logout
+* Gestión de usuarios
+* Roles: usuario, soporte, administrador
+
+**Tecnologías:**
+
+* Laravel Sanctum
+
+**Endpoints principales:**
+
+* POST `/api/login`
+* POST `/api/logout`
+* GET `/api/user`
+
+#### Prueba del módulo
+
+* Postman / Insomnia
+* Login correcto retorna token
+* Acceso protegido requiere autenticación
+
+---
+
+### **Módulo 3: Roles y Permisos**
+
+**Funcionalidad:**
+
+* Asignación de roles
+* Control de acceso por rol
+
+**Reglas:**
+
+* Usuario: crea y consulta tickets
+* Soporte: gestiona tickets
+* Admin: acceso total
+
+#### Prueba del módulo
+
+* Usuario no puede acceder a endpoints de soporte
+* Soporte sí puede gestionar tickets
+
+---
+
+### **Módulo 4: Gestión de Tickets**
+
+**Funcionalidad:**
+
+* Crear ticket
+* Listar tickets
+* Ver detalle
+* Actualizar estado
+
+**Campos principales:**
+
+* Tipo de incidencia
+* Prioridad
+* Estado
+* Descripción
+
+**Endpoints:**
+
+* POST `/api/tickets`
+* GET `/api/tickets`
+* GET `/api/tickets/{id}`
+* PUT `/api/tickets/{id}`
+
+#### Prueba del módulo
+
+* Creación exitosa de ticket
+* Cambio de estado reflejado
+
+---
+
+### **Módulo 5: Comentarios y Asignación**
+
+**Funcionalidad:**
+
+* Comentarios de usuario
+* Comentarios internos
+* Asignación a técnico
+
+#### Prueba del módulo
+
+* Comentarios visibles según rol
+* Técnico asignado correctamente
+
+---
+
+### **Módulo 6: Notificaciones**
+
+**Funcionalidad:**
+
+* Email al crear ticket
+* Email al cambiar estado
+
+#### Prueba del módulo
+
+* Recepción de correo
+* Contenido correcto
+
+---
+
+## **4. Pruebas Backend (Checklist General)**
+
+* API responde en JSON
+* Tokens válidos
+* Validaciones activas
+* Logs generados
+* Seguridad por roles
+
+---
+
+# **5. Documentación del Frontend (React)**
+
+## **5.1 Estructura del Frontend**
+
+```
+System_Gestion_ticket_frontend/
+│
+├── src/
+│   ├── api/
+│   ├── components/
+│   ├── pages/
+│   ├── hooks/
+│   ├── context/
+│   └── styles/
+```
+
+---
+
+## **5.2 Módulos del Frontend**
+
+### **Módulo 1: Autenticación**
+
+* Login
+* Manejo de token
+* Protección de rutas
+
+**Prueba:**
+
+* Acceso sin login bloqueado
+* Token guardado correctamente
+
+---
+
+### **Módulo 2: Panel de Usuario**
+
+* Crear ticket
+* Ver estado
+* Historial
+
+**Prueba:**
+
+* Ticket creado desde UI
+* Estado actualizado
+
+---
+
+### **Módulo 3: Panel de Soporte**
+
+* Lista de tickets
+* Filtros
+* Asignación
+
+**Prueba:**
+
+* Cambio de estado reflejado
+
+---
+
+### **Módulo 4: Dashboard**
+
+* Estadísticas
+* Gráficos
+
+**Prueba:**
+
+* Datos correctos
+
+---
+
+# **6. Guía de Ejecución del Proyecto**
+
+## **6.1 Ejecutar Backend**
+
+```bash
+cd System_Gestion_ticket_backend
+php artisan serve
+```
+
+URL:
+
+```
+http://127.0.0.1:8000
+```
+
+---
+
+## **6.2 Ejecutar Frontend**
+
+```bash
+cd System_Gestion_ticket_frontend
+npm install
+npm run dev
+```
+
+URL:
+
+```
+http://localhost:5173
+```
+
+---
+
+## **7. Flujo de Desarrollo Recomendado**
+
+1. Backend módulo por módulo
+2. Pruebas con Postman
+3. Frontend consume API
+4. Pruebas integrales
+
+---
+
+## **8. Conclusión**
+
+Esta documentación define una **ruta clara, modular y profesional** para el desarrollo del sistema, permitiendo control, escalabilidad y calidad en cada fase del proyecto.
