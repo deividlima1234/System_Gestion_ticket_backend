@@ -60,7 +60,7 @@ class TicketController extends Controller
         }
 
         $request->validate([
-            'status' => 'in:open,in_progress,closed',
+            'status' => 'in:open,in_progress,pending,resolved,closed',
             'priority' => 'in:low,medium,high',
         ]);
 
@@ -78,13 +78,19 @@ class TicketController extends Controller
     {
         $user = $request->user();
 
-        if ($user->role === 'user') {
+        if ($user->role !== 'admin') {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
         $request->validate([
             'assigned_to' => 'required|exists:users,id',
         ]);
+
+        $assignedUser = \App\Models\User::find($request->assigned_to);
+
+        if ($assignedUser->role !== 'support') {
+             return response()->json(['message' => 'The assigned user must have the support role.'], 422);
+        }
 
         $ticket->update(['assigned_to' => $request->assigned_to]);
 
