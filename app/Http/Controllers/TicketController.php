@@ -13,10 +13,10 @@ class TicketController extends Controller
         $user = $request->user();
 
         if ($user->role === 'user') {
-            return Ticket::where('user_id', $user->id)->get();
+            return Ticket::with('user:id,name,email')->where('user_id', $user->id)->get();
         }
 
-        return Ticket::all();
+        return Ticket::with('user:id,name,email')->get();
     }
 
     public function store(Request $request)
@@ -48,7 +48,7 @@ class TicketController extends Controller
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        return $ticket;
+        return $ticket->load('user:id,name,email');
     }
 
     public function update(Request $request, Ticket $ticket)
