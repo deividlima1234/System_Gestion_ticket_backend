@@ -208,6 +208,79 @@ curl -X PUT http://127.0.0.1:8000/api/v1/tickets/1/assign \
 ```
 
 ---
+### 4. Gestión de Perfil
+
+#### 👤 Obtener Perfil
+*   **Endpoint:** `GET /api/v1/profile`
+*   **Headers:** `Authorization: Bearer <TOKEN>`
+
+**Prueba (Curl):**
+```bash
+curl -X GET http://127.0.0.1:8000/api/v1/profile \
+-H "Authorization: Bearer <TOKEN>" \
+-H "Accept: application/json"
+```
+
+#### ✏️ Actualizar Perfil
+*   **Endpoint:** `PUT /api/v1/profile`
+*   **Headers:** `Authorization: Bearer <TOKEN>`
+*   **Body:**
+    ```json
+    {
+        "name": "Nuevo Nombre",
+        "email": "nuevo@email.com",
+        "password": "newpassword",
+        "password_confirmation": "newpassword"
+    }
+    ```
+
+**Prueba (Curl):**
+```bash
+curl -X PUT http://127.0.0.1:8000/api/v1/profile \
+-H "Authorization: Bearer <TOKEN>" \
+-H "Content-Type: application/json" \
+-d '{"name":"Nuevo Nombre", "email":"nuevo@email.com"}'
+```
+
+---
+
+### 5. Gestión de Usuarios (Solo Admin)
+
+#### 👥 Listar Usuarios
+*   **Endpoint:** `GET /api/v1/users`
+*   **Headers:** `Authorization: Bearer <TOKEN_ADMIN>`
+
+#### ➕ Crear Usuario
+*   **Endpoint:** `POST /api/v1/users`
+*   **Headers:** `Authorization: Bearer <TOKEN_ADMIN>`
+*   **Body:**
+    ```json
+    {
+        "name": "Soporte Técnico",
+        "email": "support@example.com",
+        "password": "password",
+        "password_confirmation": "password",
+        "role": "support"
+    }
+    ```
+
+#### ✏️ Actualizar Usuario
+*   **Endpoint:** `PUT /api/v1/users/{id}`
+*   **Headers:** `Authorization: Bearer <TOKEN_ADMIN>`
+*   **Body:**
+    ```json
+    {
+        "name": "Soporte Actualizado",
+        "email": "support@example.com",
+        "role": "support"
+    }
+    ```
+
+#### ❌ Eliminar Usuario
+*   **Endpoint:** `DELETE /api/v1/users/{id}`
+*   **Headers:** `Authorization: Bearer <TOKEN_ADMIN>`
+
+---
 
 ## 📧 Notificaciones (Logs)
 

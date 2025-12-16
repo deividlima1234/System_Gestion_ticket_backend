@@ -15,6 +15,10 @@ Route::prefix('v1')->group(function () {
             return response()->json(['message' => 'Welcome Admin']);
         })->middleware('role:admin');
 
+        Route::middleware(['role:admin'])->group(function () {
+             Route::apiResource('users', \App\Http\Controllers\UserController::class);
+        });
+
         Route::apiResource('tickets', \App\Http\Controllers\TicketController::class);
         Route::post('/tickets/{ticket}/comments', [\App\Http\Controllers\CommentController::class, 'store']);
         Route::get('/tickets/{ticket}/comments', [\App\Http\Controllers\CommentController::class, 'index']);
