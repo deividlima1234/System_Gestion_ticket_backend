@@ -10,7 +10,10 @@ class ProfileController extends Controller
 {
     public function show(Request $request)
     {
-        return response()->json($request->user());
+        return response()->json($request->user())
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function update(Request $request)
