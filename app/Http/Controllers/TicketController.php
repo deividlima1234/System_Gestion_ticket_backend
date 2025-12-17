@@ -32,6 +32,10 @@ class TicketController extends Controller
             $query->where('user_id', $user->id);
         }
 
+        if ($user->role === 'support') {
+            $query->where('assigned_to', $user->id);
+        }
+
         return $query->get();
     }
 
