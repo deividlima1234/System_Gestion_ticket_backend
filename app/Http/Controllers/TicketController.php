@@ -11,12 +11,28 @@ class TicketController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        $query = Ticket::with('user:id,name,email');
 
-        if ($user->role === 'user') {
-            return Ticket::with('user:id,name,email')->where('user_id', $user->id)->get();
+        if ($user->role === 'admin') {
+            return $query->get();
         }
 
-        return Ticket::with('user:id,name,email')->get();
+        // For non-admins (user/support)
+        $query->where(function ($q) {
+            // Active tickets
+            $q->whereIn('status', ['open', 'in_progress', 'pending', 'resolved'])
+              // OR Closed tickets updated today
+              ->orWhere(function ($subQ) {
+                  $subQ->where('status', 'closed')
+                       ->whereDate('updated_at', \Carbon\Carbon::today());
+              });
+        });
+
+        if ($user->role === 'user') {
+            $query->where('user_id', $user->id);
+        }
+
+        return $query->get();
     }
 
     public function store(Request $request)
@@ -44,6 +60,11 @@ class TicketController extends Controller
     {
         $user = Auth::user();
 
+        // Access control for closed tickets
+        if ($ticket->status === 'closed' && $user->role !== 'admin') {
+            return response()->json(['message' => 'This ticket has been closed and archived.'], 403);
+        }
+
         if ($user->role === 'user' && $ticket->user_id !== $user->id) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
@@ -57,6 +78,21 @@ class TicketController extends Controller
 
         if ($user->role === 'user') {
              return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        // If ticket is closed, check for reopening logic
+        if ($ticket->status === 'closed') {
+            // Only admin can modify a closed ticket
+            if ($user->role !== 'admin') {
+                return response()->json(['message' => 'Closed tickets cannot be modified.'], 403);
+            }
+
+            // Check if it's a reopening attempt
+            if ($request->has('status') && in_array($request->status, ['open', 'in_progress'])) {
+                // Allow reopening
+            } else {
+                return response()->json(['message' => 'Closed tickets can only be reopened.'], 403);
+            }
         }
 
         $request->validate([
