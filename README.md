@@ -1,316 +1,202 @@
 # System Gestión de Tickets (Backend)
 
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![PHP Version](https://img.shields.io/badge/php-%5E8.2-777BB4)
+![Laravel Version](https://img.shields.io/badge/laravel-%5E11.0-FF2D20)
+
 ## 📋 Descripción General
 
-Este proyecto consiste en una **API RESTful** robusta y escalable desarrollada con **Laravel 11**, diseñada para gestionar un sistema de tickets de soporte técnico. La arquitectura está desacoplada, permitiendo que cualquier cliente (como una SPA en React) consuma los servicios de manera eficiente.
+Este proyecto es una **API RESTful** robusta y escalable desarrollada con **Laravel 11**, diseñada para gestionar un sistema de tickets de soporte técnico eficiente. Su arquitectura modular y desacoplada permite una integración fluida con diversos clientes frontend (como SPAs en React o Vue), garantizando un rendimiento óptimo y una fácil mantenibilidad.
+
+El sistema está construido siguiendo las mejores prácticas de desarrollo, incluyendo autenticación segura, control de acceso basado en roles (RBAC) y una estructura de base de datos normalizada.
 
 ### 🚀 Características Principales
 
-*   **Arquitectura Modular:** Desarrollo organizado en módulos independientes (Auth, Tickets, Roles, Notificaciones).
-*   **Autenticación Segura:** Implementada con **Laravel Sanctum** (Tokens Bearer).
-*   **Control de Acceso (RBAC):** Roles definidos (`user`, `support`, `admin`) con middleware personalizado.
-*   **Gestión de Tickets:** CRUD completo con estados, prioridades y asignación de técnicos.
-*   **Sistema de Comentarios:** Hilo de conversación por ticket.
-*   **Notificaciones:** Envío de correos electrónicos (simulado en logs) ante eventos críticos.
+#### 🔐 Autenticación y Seguridad
+*   **Laravel Sanctum:** Implementación de tokens Bearer para una autenticación segura y ligera.
+*   **Protección de Rutas:** Middleware personalizado para asegurar endpoints sensibles.
+
+#### 👥 Gestión de Usuarios y Roles (RBAC)
+*   **Roles Definidos:**
+    *   `admin`: Control total del sistema, gestión de usuarios y tickets.
+    *   `support`: Gestión de tickets y asignaciones.
+    *   `user`: Creación y seguimiento de sus propios tickets.
+*   **Gestión de Perfiles:** Actualización de información personal y credenciales.
+
+#### 🎫 Sistema de Tickets
+*   **Ciclo de Vida Completo:** Creación, actualización, asignación y cierre de tickets.
+*   **Estados Personalizables:** `open`, `in_progress`, `pending`, `resolved`, `closed`.
+*   **Priorización:** Clasificación por niveles (`low`, `medium`, `high`) para una mejor gestión del SLA.
+*   **Asignación Inteligente:** Capacidad de asignar tickets a técnicos específicos.
+
+#### 💬 Colaboración
+*   **Hilo de Comentarios:** Comunicación fluida dentro de cada ticket entre usuarios y soporte.
+*   **Historial:** Registro de interacciones para auditoría y seguimiento.
 
 ---
 
-## 🛠️ Requisitos del Sistema
+## 🛠️ Stack Tecnológico
 
-*   PHP >= 8.2
-*   Composer
-*   PostgreSQL
-*   Node.js & NPM (opcional, para assets si fuera necesario)
+*   **Lenguaje:** PHP 8.2+
+*   **Framework:** Laravel 11
+*   **Base de Datos:** PostgreSQL
+*   **Containerización:** Docker (opcional para desarrollo)
+*   **Servidor Web:** Apache / Nginx
 
 ---
 
 ## ⚙️ Guía de Instalación
 
-Sigue estos pasos para desplegar el entorno de desarrollo local:
+### Requisitos Previos
+Asegúrate de tener instalado lo siguiente en tu entorno:
+*   [PHP](https://www.php.net/) >= 8.2
+*   [Composer](https://getcomposer.org/)
+*   [PostgreSQL](https://www.postgresql.org/)
+*   [Git](https://git-scm.com/)
+
+### Instalación Local
 
 1.  **Clonar el repositorio**
     ```bash
-    git clone https://github.com/deividlima1234/System_Gestion_ticket_backend
+    git clone https://github.com/deividlima1234/System_Gestion_ticket_backend.git
     cd System_Gestion_ticket_backend
     ```
 
-2.  **Instalar dependencias de PHP**
+2.  **Instalar dependencias**
     ```bash
     composer install
     ```
 
-3.  **Configurar variables de entorno**
+3.  **Configurar entorno**
+    Copia el archivo de ejemplo y configura tus credenciales de base de datos.
     ```bash
     cp .env.example .env
     ```
-    Edita el archivo `.env` y configura tu conexión a base de datos:
+    Edita el archivo `.env`:
     ```env
     DB_CONNECTION=pgsql
     DB_HOST=127.0.0.1
     DB_PORT=5432
     DB_DATABASE=gestion_tickets
-    DB_USERNAME=postgres
+    DB_USERNAME=tu_usuario
     DB_PASSWORD=tu_password
     ```
 
-4.  **Generar clave de aplicación**
+4.  **Generar Key de Aplicación**
     ```bash
     php artisan key:generate
     ```
 
-5.  **Ejecutar migraciones**
-    Esto creará las tablas necesarias en tu base de datos PostgreSQL.
+5.  **Ejecutar Migraciones**
+    Crea las tablas en la base de datos.
     ```bash
     php artisan migrate
     ```
 
----
+6.  **Iniciar Servidor**
+    ```bash
+    php artisan serve
+    ```
+    La API estará disponible en `http://127.0.0.1:8000`.
 
-## ▶️ Ejecución del Servidor
+### 🐳 Instalación con Docker
 
-Para iniciar el servidor de desarrollo local:
+Si prefieres usar Docker, el proyecto incluye un `Dockerfile` listo para usar.
 
-```bash
-php artisan serve
-```
-
-La API estará disponible en: `http://127.0.0.1:8000`
-
----
-
-## 📚 Documentación de la API y Pruebas
-
-A continuación se detallan los endpoints principales con ejemplos de cómo probarlos usando `curl`.
-
-### 1. Autenticación
-
-#### 🔐 Login
-Obtiene un token de acceso.
-
-*   **Endpoint:** `POST /api/v1/login`
-*   **Body:**
-    ```json
-    {
-        "email": "test@example.com",
-        "password": "password"
-    }
+1.  **Construir la imagen**
+    ```bash
+    docker build -t ticket-backend .
     ```
 
-**Prueba (Curl):**
+2.  **Ejecutar el contenedor**
+    ```bash
+    docker run -p 8000:80 ticket-backend
+    ```
+
+---
+
+## 📚 Documentación de la API
+
+A continuación se detallan los endpoints principales. Para probarlos, asegúrate de incluir el header `Accept: application/json`.
+
+### 🔐 Autenticación
+
+| Método | Endpoint | Descripción |
+| :--- | :--- | :--- |
+| `POST` | `/api/v1/login` | Iniciar sesión y obtener token. |
+| `POST` | `/api/v1/logout` | Cerrar sesión (Requiere Token). |
+| `GET` | `/api/v1/user` | Obtener usuario autenticado. |
+
+**Ejemplo Login:**
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/login \
 -H "Content-Type: application/json" \
--d '{"email":"test@example.com", "password":"password"}'
+-d '{"email":"admin@example.com", "password":"password"}'
 ```
 
-**Respuesta Esperada (200 OK):**
-```json
-{
-    "access_token": "1|...token_hash...",
-    "token_type": "Bearer"
-}
-```
+### 🎫 Tickets
 
-> **Nota:** Copia el `access_token` recibido, lo necesitarás para las siguientes peticiones en el header `Authorization`.
+| Método | Endpoint | Descripción | Acceso |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/tickets` | Listar tickets. | Todos (Filtros según rol) |
+| `POST` | `/api/v1/tickets` | Crear nuevo ticket. | Todos |
+| `GET` | `/api/v1/tickets/{id}` | Ver detalles de un ticket. | Dueño / Support / Admin |
+| `PUT` | `/api/v1/tickets/{id}` | Actualizar ticket. | Dueño / Support / Admin |
+| `DELETE` | `/api/v1/tickets/{id}` | Eliminar ticket. | Admin |
+| `PUT` | `/api/v1/tickets/{id}/assign` | Asignar técnico. | Support / Admin |
 
----
-
-### 2. Gestión de Tickets
-
-#### 📝 Crear Ticket
-*   **Endpoint:** `POST /api/v1/tickets`
-*   **Headers:** `Authorization: Bearer <TOKEN>`
-*   **Body:**
-    ```json
-    {
-        "title": "Fallo en impresora",
-        "description": "La impresora del piso 2 no responde.",
-        "priority": "high"
-    }
-    ```
-
-**Prueba (Curl):**
+**Ejemplo Crear Ticket:**
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/tickets \
 -H "Authorization: Bearer <TOKEN>" \
 -H "Content-Type: application/json" \
--d '{"title":"Fallo en impresora", "description":"La impresora del piso 2 no responde.", "priority":"high"}'
+-d '{"title":"Error en Login", "description":"No puedo acceder...", "priority":"high"}'
 ```
 
-#### 📋 Listar Tickets
-*   **Endpoint:** `GET /api/v1/tickets`
-*   **Headers:** `Authorization: Bearer <TOKEN>`
-*   **Regla:** Los usuarios normales ven solo sus tickets. Admin/Soporte ven todos.
+### 💬 Comentarios
 
-**Prueba (Curl):**
+| Método | Endpoint | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/tickets/{id}/comments` | Ver comentarios de un ticket. |
+| `POST` | `/api/v1/tickets/{id}/comments` | Agregar comentario. |
+
+### 👥 Usuarios (Admin Only)
+
+| Método | Endpoint | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/users` | Listar todos los usuarios. |
+| `POST` | `/api/v1/users` | Crear usuario (Soporte/Admin). |
+| `PUT` | `/api/v1/users/{id}` | Actualizar usuario. |
+| `DELETE` | `/api/v1/users/{id}` | Eliminar usuario. |
+
+---
+
+## 🗄️ Esquema de Base de Datos
+
+El sistema utiliza las siguientes tablas principales:
+
+*   **users**: Almacena la información de usuarios y sus roles (`role`).
+*   **tickets**: Contiene la información de los tickets, estado (`status`), prioridad (`priority`) y relaciones con usuarios (`user_id`, `assigned_to`).
+*   **comments**: Almacena los mensajes asociados a cada ticket.
+*   **personal_access_tokens**: Tabla de Laravel Sanctum para gestión de tokens API.
+
+---
+
+## ✅ Testing
+
+Para ejecutar las pruebas automatizadas del sistema:
+
 ```bash
-curl -X GET http://127.0.0.1:8000/api/v1/tickets \
--H "Authorization: Bearer <TOKEN>" \
--H "Content-Type: application/json"
-```
-
-#### 🔄 Actualizar Estado (Solo Admin/Soporte)
-*   **Endpoint:** `PUT /api/v1/tickets/{id}`
-*   **Headers:** `Authorization: Bearer <TOKEN_ADMIN>`
-*   **Body:**
-    ```json
-    {
-        "status": "in_progress"
-    }
-    ```
-
-**Prueba (Curl):**
-```bash
-curl -X PUT http://127.0.0.1:8000/api/v1/tickets/1 \
--H "Authorization: Bearer <TOKEN_ADMIN>" \
--H "Content-Type: application/json" \
--d '{"status":"in_progress"}'
+php artisan test
 ```
 
 ---
 
-### 3. Comentarios y Asignación
+## 📄 Licencia
 
-#### 💬 Agregar Comentario
-*   **Endpoint:** `POST /api/v1/tickets/{id}/comments`
-*   **Headers:** `Authorization: Bearer <TOKEN>`
-*   **Body:**
-    ```json
-    {
-        "content": "Ya reinicié el equipo y sigue igual."
-    }
-    ```
+Este proyecto está bajo la licencia [MIT](https://opensource.org/licenses/MIT).
 
-**Prueba (Curl):**
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/tickets/1/comments \
--H "Authorization: Bearer <TOKEN>" \
--H "Content-Type: application/json" \
--d '{"content":"Ya reinicié el equipo y sigue igual."}'
-```
-
-#### 👤 Asignar Técnico (Solo Admin/Soporte)
-*   **Endpoint:** `PUT /api/v1/tickets/{id}/assign`
-*   **Headers:** `Authorization: Bearer <TOKEN_ADMIN>`
-*   **Body:**
-    ```json
-    {
-        "assigned_to": 2
-    }
-    ```
-
-**Prueba (Curl):**
-```bash
-curl -X PUT http://127.0.0.1:8000/api/v1/tickets/1/assign \
--H "Authorization: Bearer <TOKEN_ADMIN>" \
--H "Content-Type: application/json" \
--d '{"assigned_to":2}'
-```
-
----
-### 4. Gestión de Perfil
-
-#### 👤 Obtener Perfil
-*   **Endpoint:** `GET /api/v1/profile`
-*   **Headers:** `Authorization: Bearer <TOKEN>`
-
-**Prueba (Curl):**
-```bash
-curl -X GET http://127.0.0.1:8000/api/v1/profile \
--H "Authorization: Bearer <TOKEN>" \
--H "Accept: application/json"
-```
-
-#### ✏️ Actualizar Perfil
-*   **Endpoint:** `PUT /api/v1/profile`
-*   **Headers:** `Authorization: Bearer <TOKEN>`
-*   **Body:**
-    ```json
-    {
-        "name": "Nuevo Nombre",
-        "email": "nuevo@email.com",
-        "password": "newpassword",
-        "password_confirmation": "newpassword"
-    }
-    ```
-
-**Prueba (Curl):**
-```bash
-curl -X PUT http://127.0.0.1:8000/api/v1/profile \
--H "Authorization: Bearer <TOKEN>" \
--H "Content-Type: application/json" \
--d '{"name":"Nuevo Nombre", "email":"nuevo@email.com"}'
-```
-
----
-
-### 5. Gestión de Usuarios (Solo Admin)
-
-#### 👥 Listar Usuarios
-*   **Endpoint:** `GET /api/v1/users`
-*   **Headers:** `Authorization: Bearer <TOKEN_ADMIN>`
-
-#### ➕ Crear Usuario
-*   **Endpoint:** `POST /api/v1/users`
-*   **Headers:** `Authorization: Bearer <TOKEN_ADMIN>`
-*   **Body:**
-    ```json
-    {
-        "name": "Soporte Técnico",
-        "email": "support@example.com",
-        "password": "password",
-        "password_confirmation": "password",
-        "role": "support"
-    }
-    ```
-
-#### ✏️ Actualizar Usuario
-*   **Endpoint:** `PUT /api/v1/users/{id}`
-*   **Headers:** `Authorization: Bearer <TOKEN_ADMIN>`
-*   **Body:**
-    ```json
-    {
-        "name": "Soporte Actualizado",
-        "email": "support@example.com",
-        "role": "support"
-    }
-    ```
-
-#### ❌ Eliminar Usuario
-*   **Endpoint:** `DELETE /api/v1/users/{id}`
-*   **Headers:** `Authorization: Bearer <TOKEN_ADMIN>`
-
----
-
-## 📧 Notificaciones (Logs)
-
-El sistema está configurado para usar el driver `log` para correos electrónicos en entorno local.
-Puedes verificar las notificaciones enviadas (Creación de Ticket, Cambio de Estado) revisando el archivo de logs:
-
-```bash
-tail -f storage/logs/laravel.log
-```
-
----
-
-## 🧪 Usuarios de Prueba (Seeders)
-
-Puedes crear usuarios manualmente usando `php artisan tinker`:
-
-```php
-// Usuario Normal
-User::factory()->create([
-    'name' => 'Test User',
-    'email' => 'user@example.com',
-    'password' => bcrypt('password'),
-    'role' => 'user'
-]);
-
-// Administrador
-User::factory()->create([
-    'name' => 'Admin User',
-    'email' => 'admin@example.com',
-    'password' => bcrypt('password'),
-    'role' => 'admin'
-]);
-```
+<div align="center">
+  <sub>Desarrollado con ❤️ por Eddam_code.</sub>
+</div>
