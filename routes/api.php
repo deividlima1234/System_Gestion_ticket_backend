@@ -23,6 +23,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/tickets/{ticket}/comments', [\App\Http\Controllers\CommentController::class, 'store']);
         Route::get('/tickets/{ticket}/comments', [\App\Http\Controllers\CommentController::class, 'index']);
         Route::put('/tickets/{ticket}/assign', [\App\Http\Controllers\TicketController::class, 'assign']);
+        
+        Route::get('/dashboard/stats', [\App\Http\Controllers\DashboardController::class, 'getStats']);
 
         Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show']);
         Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update']);
